@@ -137,6 +137,16 @@ func GetRandomSatisfiedChannel(
 		channels, _ = filterCandidateIDs(group2model2channels[group][normalizedModel], model, filters)
 	}
 
+	// Alias fallback between qwen2.5-7b and Qwen/Qwen2.5-7B-Instruct-AWQ
+	if len(channels) == 0 {
+		mLower := strings.ToLower(model)
+		if mLower == "qwen2.5-7b" {
+			channels, _ = filterCandidateIDs(group2model2channels[group]["Qwen/Qwen2.5-7B-Instruct-AWQ"], model, filters)
+		} else if strings.Contains(mLower, "qwen2.5-7b") {
+			channels, _ = filterCandidateIDs(group2model2channels[group]["qwen2.5-7b"], model, filters)
+		}
+	}
+
 	if len(channels) == 0 {
 		return nil, nil
 	}
@@ -145,7 +155,7 @@ func GetRandomSatisfiedChannel(
 		if channel, ok := channelsIDM[channels[0]]; ok {
 			return channel, nil
 		}
-		return nil, fmt.Errorf("数据库一致性错误，渠道# %d 不存在，请联系管理员修复", channels[0])
+		return nil, fmt.Errorf("Database consistency error: channel #%d does not exist", channels[0])
 	}
 
 	uniquePriorities := make(map[int]bool)
@@ -153,7 +163,7 @@ func GetRandomSatisfiedChannel(
 		if channel, ok := channelsIDM[channelId]; ok {
 			uniquePriorities[int(channel.GetPriority())] = true
 		} else {
-			return nil, fmt.Errorf("数据库一致性错误，渠道# %d 不存在，请联系管理员修复", channelId)
+			return nil, fmt.Errorf("Database consistency error: channel #%d does not exist", channelId)
 		}
 	}
 	var sortedUniquePriorities []int
@@ -177,7 +187,7 @@ func GetRandomSatisfiedChannel(
 				targetChannels = append(targetChannels, channel)
 			}
 		} else {
-			return nil, fmt.Errorf("数据库一致性错误，渠道# %d 不存在，请联系管理员修复", channelId)
+			return nil, fmt.Errorf("Database consistency error: channel #%d does not exist", channelId)
 		}
 	}
 

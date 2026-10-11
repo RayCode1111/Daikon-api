@@ -50,6 +50,16 @@ func Distribute() func(c *gin.Context) {
 			abortWithOpenAiMessage(c, http.StatusBadRequest, i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
 			return
 		}
+		if shouldSelectChannel {
+			if modelRequest.Model == "" {
+				modelRequest.Model = "qwen2.5-7b"
+			}
+			mLower := strings.ToLower(modelRequest.Model)
+			if !(mLower == "qwen2.5-7b" || mLower == "qwen/qwen2.5-7b-instruct-awq" || strings.Contains(mLower, "qwen2.5-7b") || strings.Contains(mLower, "qwen2.5:7b")) {
+				abortWithOpenAiMessage(c, http.StatusBadRequest, fmt.Sprintf("Model '%s' is currently under development. Currently only 'qwen2.5-7b' is supported.", modelRequest.Model))
+				return
+			}
+		}
 		_, pinned, _ := constraints.ResolvedPin()
 		if !pinned {
 			// Select a channel for the user
@@ -75,8 +85,7 @@ func Distribute() func(c *gin.Context) {
 
 			if shouldSelectChannel {
 				if modelRequest.Model == "" {
-					abortWithOpenAiMessage(c, http.StatusBadRequest, i18n.T(c, i18n.MsgDistributorModelNameRequired))
-					return
+					modelRequest.Model = "qwen2.5-7b"
 				}
 				// check path is /pg/chat/completions
 				if strings.HasPrefix(c.Request.URL.Path, "/pg/chat/completions") {

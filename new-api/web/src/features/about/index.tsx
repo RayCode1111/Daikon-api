@@ -48,28 +48,28 @@ function EmptyAboutState() {
         </div>
         <div className='space-y-4 text-sm'>
           <p>
-            {t('New API Project Repository:')}{' '}
+            {t('Daikon API Project Repository:')}{' '}
             <a
-              href='https://github.com/QuantumNous/new-api'
+              href='https://github.com/RayCode1111/Daikon-api'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('https://github.com/QuantumNous/new-api')}
+              {t('https://github.com/RayCode1111/Daikon-api')}
             </a>
           </p>
           <p className='text-muted-foreground'>
             <a
-              href='https://github.com/QuantumNous/new-api'
+              href='https://github.com/RayCode1111/Daikon-api'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('NewAPI')}
+              {t('Daikon API')}
             </a>{' '}
             © {currentYear}{' '}
             <a
-              href='https://github.com/QuantumNous'
+              href='https://github.com/RayCode1111'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'

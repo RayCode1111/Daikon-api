@@ -639,10 +639,33 @@ func GetUserModels(c *gin.Context) {
 			groupsToQuery = []string{group}
 		}
 	}
+	enabledModels := service.GetGroupsEnabledModels(groupsToQuery)
+	var activeModels []string
+	hasQwen := false
+	for _, m := range enabledModels {
+		mLower := strings.ToLower(m)
+		if mLower == "qwen2.5-7b" || mLower == "qwen/qwen2.5-7b-instruct-awq" || strings.Contains(mLower, "qwen2.5-7b") {
+			activeModels = append(activeModels, m)
+			hasQwen = true
+		}
+	}
+	if !hasQwen {
+		activeModels = append([]string{"qwen2.5-7b"}, activeModels...)
+	}
+
+	// Under-development models to inform users
+	underDev := []string{
+		"gpt-4o (Under Development)",
+		"claude-3-5-sonnet (Under Development)",
+		"gemini-1.5-pro (Under Development)",
+		"deepseek-v3 (Under Development)",
+	}
+	activeModels = append(activeModels, underDev...)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
-		"data":    service.GetGroupsEnabledModels(groupsToQuery),
+		"data":    activeModels,
 	})
 }
 

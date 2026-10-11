@@ -389,6 +389,10 @@ func GetModelRatio(name string) (float64, bool, string) {
 
 	ratio, ok := modelRatioMap.Get(name)
 	if !ok {
+		mLower := strings.ToLower(name)
+		if strings.Contains(mLower, "qwen2.5-7b") || strings.Contains(mLower, "qwen/qwen2.5-7b") {
+			return 0.5, true, name
+		}
 		return 37.5, operation_setting.SelfUseModeEnabled, name
 	}
 	return ratio, true, name

@@ -277,10 +277,10 @@ func getChannel(c *gin.Context, info *relaycommon.RelayInfo, retryParam *service
 	}
 	channel, selectGroup, err := service.CacheGetRandomSatisfiedChannel(retryParam)
 	if err != nil {
-		return nil, types.NewError(fmt.Errorf("获取分组 %s 下模型 %s 的可用渠道失败（retry）: %s", selectGroup, info.OriginModelName, err.Error()), types.ErrorCodeGetChannelFailed, types.ErrOptionWithSkipRetry())
+		return nil, types.NewError(fmt.Errorf("failed to get available channel for model %s in group %s (retry): %s", info.OriginModelName, selectGroup, err.Error()), types.ErrorCodeGetChannelFailed, types.ErrOptionWithSkipRetry())
 	}
 	if channel == nil {
-		return nil, types.NewError(fmt.Errorf("分组 %s 下模型 %s 的可用渠道不存在（retry）", selectGroup, info.OriginModelName), types.ErrorCodeGetChannelFailed, types.ErrOptionWithSkipRetry())
+		return nil, types.NewError(fmt.Errorf("no available channel exists for model %s in group %s (retry)", info.OriginModelName, selectGroup), types.ErrorCodeGetChannelFailed, types.ErrOptionWithSkipRetry())
 	}
 
 	info.PriceData.GroupRatioInfo = helper.HandleGroupRatio(c, info)
@@ -350,7 +350,7 @@ func RelayMidjourney(c *gin.Context) {
 func RelayNotImplemented(c *gin.Context) {
 	err := types.OpenAIError{
 		Message: "API not implemented",
-		Type:    "new_api_error",
+		Type:    "daikon_api_error",
 		Param:   "",
 		Code:    "api_not_implemented",
 	}
@@ -390,7 +390,7 @@ func RelayTaskPluginEndpoint(c *gin.Context, fallback gin.HandlerFunc) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": gin.H{
 				"message": "Task protocol request failed",
-				"type":    "new_api_error",
+				"type":    "daikon_api_error",
 				"code":    "task_protocol_error",
 			},
 		})

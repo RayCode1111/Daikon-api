@@ -116,6 +116,18 @@ func GetChannel(
 	if err != nil {
 		return nil, err
 	}
+	if len(abilities) == 0 {
+		mLower := strings.ToLower(model)
+		altModel := ""
+		if mLower == "qwen2.5-7b" {
+			altModel = "Qwen/Qwen2.5-7B-Instruct-AWQ"
+		} else if strings.Contains(mLower, "qwen2.5-7b") {
+			altModel = "qwen2.5-7b"
+		}
+		if altModel != "" {
+			_ = DB.Where(commonGroupCol+" = ? and model = ? and enabled = ?", group, altModel, true).Order("priority DESC, weight DESC").Find(&abilities).Error
+		}
+	}
 	abilities = filterAbilitiesByConstraints(abilities, model, filters)
 	if len(abilities) > 0 {
 		priorities := make([]int64, 0)

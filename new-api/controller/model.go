@@ -249,18 +249,24 @@ func ListModels(c *gin.Context, modelType int) {
 		}
 	}
 	models := service.GetGroupsEnabledModels(ownerGroups)
+	hasQwen := false
 	for _, modelName := range models {
-		if modelLimitEnable {
-			matchingName := ratio_setting.RoutingMatchModelName(modelName)
-			if !tokenModelLimit[modelName] && !tokenModelLimit[matchingName] {
-				continue
-			}
+		mLower := strings.ToLower(modelName)
+		if mLower == "qwen2.5-7b" || mLower == "qwen/qwen2.5-7b-instruct-awq" || strings.Contains(mLower, "qwen2.5-7b") {
+			userModelNames = append(userModelNames, modelName)
+			hasQwen = true
 		}
-		if !acceptUnsetRatioModel && !helper.HasModelBillingConfig(modelName) {
-			continue
-		}
-		userModelNames = append(userModelNames, modelName)
 	}
+	if !hasQwen {
+		userModelNames = append([]string{"qwen2.5-7b"}, userModelNames...)
+	}
+	underDev := []string{
+		"gpt-4o (under-development)",
+		"claude-3-5-sonnet (under-development)",
+		"gemini-1.5-pro (under-development)",
+		"deepseek-v3 (under-development)",
+	}
+	userModelNames = append(userModelNames, underDev...)
 
 	ownerByModel := map[string]string{}
 	if len(ownerGroups) > 0 {
