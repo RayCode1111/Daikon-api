@@ -19,7 +19,7 @@ import urllib.request
 import urllib.error
 
 # Configurations
-DEFAULT_PLATFORM_URL = "https://overprice-decaf-naming.ngrok-free.dev"
+DEFAULT_PLATFORM_URL = "https://daikon-api.onrender.com"
 DEFAULT_SECRET = "colab-worker-secret-key-123"
 MODEL_ID = "Qwen/Qwen2.5-7B-Instruct-AWQ"
 SERVED_MODEL_NAME = "qwen2.5-7b"
