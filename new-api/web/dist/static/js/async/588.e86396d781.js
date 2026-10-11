@@ -1,0 +1,1 @@
+"use strict";(self.rspackChunkdaikon_web=self.rspackChunkdaikon_web||[]).push([[588],{XXU(e,s,k){k.r(s);let n=k("ZI").GN;k.d(s,{},{component:n})}}]);

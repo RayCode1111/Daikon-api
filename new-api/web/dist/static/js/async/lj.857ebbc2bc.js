@@ -1,0 +1,1 @@
+"use strict";(self.rspackChunkdaikon_web=self.rspackChunkdaikon_web||[]).push([["lj"],{DD(n,s,e){e.r(s),e.d(s,{component:()=>t});var r=e("H"),k=e("M");let t=function(){return(0,r.jsx)(k.sv,{})}}}]);

@@ -1,0 +1,1 @@
+"use strict";(self.rspackChunkdaikon_web=self.rspackChunkdaikon_web||[]).push([["2s"],{Ia(s,e,k){k.r(e);let n=k("UV").m;k.d(e,{},{component:n})}}]);

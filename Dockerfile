@@ -31,3 +31,4 @@ COPY new-api/LICENSE new-api/NOTICE new-api/THIRD-PARTY-LICENSES.md /licenses/
 EXPOSE 3000
 WORKDIR /data
 ENTRYPOINT ["/new-api"]
+

@@ -7,3 +7,6 @@ __pycache__
 .git
 .github
 log.txt
+node_modules
+**/node_modules
+new-api/web/node_modules
