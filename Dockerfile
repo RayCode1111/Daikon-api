@@ -1,0 +1,33 @@
+FROM golang:1.26.1-alpine AS builder
+
+ENV GO111MODULE=on CGO_ENABLED=0
+ARG TARGETOS
+ARG TARGETARCH
+ENV GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64}
+ENV GOEXPERIMENT=greenteagc
+
+WORKDIR /build
+
+ADD new-api/go.mod new-api/go.sum ./
+ADD new-api/relaykit/go.mod ./relaykit/go.mod
+ADD new-api/tokenkit/go.mod ./tokenkit/go.mod
+RUN go mod download
+
+COPY new-api .
+
+RUN ls -la web/dist/index.html
+
+RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
+
+COPY --from=builder /build/new-api /
+COPY new-api/LICENSE new-api/NOTICE new-api/THIRD-PARTY-LICENSES.md /licenses/
+EXPOSE 3000
+WORKDIR /data
+ENTRYPOINT ["/new-api"]
