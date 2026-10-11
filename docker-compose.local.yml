@@ -1,0 +1,16 @@
+services:
+  new-api:
+    image: new-api-local:latest
+    build:
+      context: ./new-api
+      dockerfile: Dockerfile.dev
+    container_name: new-api-platform
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - ./data:/data
+    environment:
+      - PORT=3000
+      - WORKER_SECRET=colab-worker-secret-key-123
+      - TZ=UTC
+

@@ -1,0 +1,86 @@
+create a colab_worker file
+modify token.go, worker.go, main.go, token.go, api-router.go
+
+
+added: mock_worker.py
+test_client.py
+docker-compose.local.yml
+
+
+
+
+
+
+docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.local.yml up -d --build
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cd ~/Project/ProductCreated
+source ./venv/bin/activate
+
+
+
+docker compose -f docker-compose.local.yml up -d
+
+
+
+# Start local quick tunnel for port 3000 (if not already running)
+colab new --gpu T4 -s my-gpu
+colab upload -s my-gpu colab_worker_runner.py /content/colab_worker_runner.py
+colab exec -s my-gpu --timeout 7200 -f colab_worker_runner.py
+
+
+
+
+
+--------------------------
+curl -s http://localhost:3000/api/worker/status | jq .
+----------------------------------
+
+
+
+
+
+colab stop -s my-gpu
+docker compose -f docker-compose.local.yml down
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
