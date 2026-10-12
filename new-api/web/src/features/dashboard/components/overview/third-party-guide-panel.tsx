@@ -1,5 +1,5 @@
-import { Check, Copy, ExternalLink, Laptop, Terminal, Sparkles, Code2, Globe } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { Laptop, Terminal, Sparkles, Code2, Globe, ExternalLink, KeyRound } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from '@tanstack/react-router'
 
@@ -7,34 +7,24 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyButton } from '@/components/copy-button'
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 import type { ApiKey } from '@/features/keys/types'
 
 interface ThirdPartyGuidePanelProps {
   apiKeys?: ApiKey[]
 }
 
-export function ThirdPartyGuidePanel({ apiKeys }: ThirdPartyGuidePanelProps) {
+export function ThirdPartyGuidePanel(_props: ThirdPartyGuidePanelProps) {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('curl')
-  const { copyToClipboard } = useCopyToClipboard({ notify: false })
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://daikon-api.onrender.com'
   const baseUrl = `${origin}/v1`
   const modelName = 'Qwen/Qwen2.5-7B-Instruct-AWQ'
-  
-  const preferredKey = useMemo(() => {
-    if (!apiKeys || apiKeys.length === 0) return null
-    return apiKeys.find((k) => k.status === 1) ?? apiKeys[0]
-  }, [apiKeys])
-
-  const apiKeyDisplay = preferredKey ? `sk-${preferredKey.key}` : 'sk-your-api-key-here'
+  const apiKeyPlaceholder = 'Your Daikon API key here'
 
   const curlSnippet = `curl ${baseUrl}/chat/completions \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer ${apiKeyDisplay}" \\
+  -H "Authorization: Bearer ${apiKeyPlaceholder}" \\
   -d '{
     "model": "${modelName}",
     "messages": [
@@ -48,7 +38,7 @@ export function ThirdPartyGuidePanel({ apiKeys }: ThirdPartyGuidePanelProps) {
 
 client = OpenAI(
     base_url="${baseUrl}",
-    api_key="${apiKeyDisplay}",
+    api_key="${apiKeyPlaceholder}",
 )
 
 completion = client.chat.completions.create(
@@ -65,7 +55,7 @@ print(completion.choices[0].message.content)`
 
 const client = new OpenAI({
   baseURL: '${baseUrl}',
-  apiKey: '${apiKeyDisplay}',
+  apiKey: '${apiKeyPlaceholder}',
 });
 
 async function main() {
@@ -92,7 +82,7 @@ main();`
             </div>
             <div>
               <CardTitle className='text-lg font-semibold tracking-tight'>
-                {t('Third-Party Client Setup & First API Request')}
+                {t('Setup & First API Request')}
               </CardTitle>
               <CardDescription className='text-xs'>
                 {t('Connect Daikon API with NextChat, Cherry Studio, ChatBox, or your own code. Powered by free Qwen 2.5 7B.')}
@@ -101,6 +91,7 @@ main();`
           </div>
           <div className='flex items-center gap-2'>
             <Button size='sm' variant='outline' render={<Link to='/keys' />}>
+              <KeyRound className='size-3.5 mr-1.5' />
               {t('Manage API Keys')}
             </Button>
             <Button size='sm' render={<Link to='/playground' />}>
@@ -135,8 +126,10 @@ main();`
           <div className='flex flex-col gap-1 min-w-0'>
             <span className='text-muted-foreground font-medium'>{t('Your API Key')}</span>
             <div className='flex items-center justify-between gap-1 rounded-lg border bg-background/80 px-2 py-1 font-mono text-[11px]'>
-              <span className='truncate'>{apiKeyDisplay}</span>
-              <CopyButton value={apiKeyDisplay} className='size-5' iconClassName='size-3' />
+              <span className='truncate text-muted-foreground italic'>{apiKeyPlaceholder}</span>
+              <Button size='sm' variant='ghost' className='h-5 px-1.5 text-[10px]' render={<Link to='/keys' />}>
+                {t('Get Key')}
+              </Button>
             </div>
           </div>
         </div>
@@ -182,7 +175,6 @@ main();`
                 {t('Run this command in your terminal to send your first API request directly:')}
               </p>
               <CopyButton value={curlSnippet} variant='outline' size='sm' className='h-7 gap-1 text-xs px-2'>
-                <Copy className='size-3' />
                 {t('Copy cURL')}
               </CopyButton>
             </div>
@@ -198,7 +190,6 @@ main();`
                 {t('Install via')} <code className='rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]'>pip install openai</code>
               </p>
               <CopyButton value={pythonSnippet} variant='outline' size='sm' className='h-7 gap-1 text-xs px-2'>
-                <Copy className='size-3' />
                 {t('Copy Python')}
               </CopyButton>
             </div>
@@ -237,8 +228,7 @@ main();`
                   {t('Set ')}
                   <strong className='text-foreground'>{t('API Key')}</strong>
                   {t(' to your Daikon key: ')}
-                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground'>{apiKeyDisplay}</code>
-                  <CopyButton value={apiKeyDisplay} className='size-5 inline-flex align-middle ml-1' iconClassName='size-3' />
+                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground'>{apiKeyPlaceholder}</code>
                 </li>
                 <li>
                   {t('In ')}
@@ -280,8 +270,7 @@ main();`
                 <li>
                   {t('Paste your ')}
                   <strong className='text-foreground'>{t('API Key')}</strong>:
-                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyDisplay}</code>
-                  <CopyButton value={apiKeyDisplay} className='size-5 inline-flex align-middle ml-1' iconClassName='size-3' />
+                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyPlaceholder}</code>
                 </li>
                 <li>
                   {t('Under Model Management, add Model ID: ')}
@@ -321,8 +310,7 @@ main();`
                 <li>
                   {t('Enter your ')}
                   <strong className='text-foreground'>{t('API Key')}</strong>:
-                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyDisplay}</code>
-                  <CopyButton value={apiKeyDisplay} className='size-5 inline-flex align-middle ml-1' iconClassName='size-3' />
+                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyPlaceholder}</code>
                 </li>
                 <li>
                   {t('Set ')}
@@ -353,8 +341,7 @@ main();`
                 <li>
                   {t('Set ')}
                   <strong className='text-foreground'>{t('API Key')}</strong>:
-                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyDisplay}</code>
-                  <CopyButton value={apiKeyDisplay} className='size-5 inline-flex align-middle ml-1' iconClassName='size-3' />
+                  <code className='rounded bg-background px-1.5 py-0.5 font-mono text-foreground ml-1'>{apiKeyPlaceholder}</code>
                 </li>
                 <li>
                   {t('Set ')}
@@ -379,7 +366,6 @@ main();`
                 {t('Install via')} <code className='rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]'>npm install openai</code>
               </p>
               <CopyButton value={nodeSnippet} variant='outline' size='sm' className='h-7 gap-1 text-xs px-2'>
-                <Copy className='size-3' />
                 {t('Copy TypeScript')}
               </CopyButton>
             </div>
