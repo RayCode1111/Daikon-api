@@ -2,8 +2,10 @@ package controller
 
 import (
 	"maps"
+	"strings"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/constant"
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting/ratio_setting"
@@ -36,7 +38,7 @@ func filterPricingByUsableGroups(pricing []model.Pricing, usableGroup map[string
 }
 
 func GetPricing(c *gin.Context) {
-	pricing := model.GetPricing()
+	rawPricing := model.GetPricing()
 	userId, exists := c.Get("id")
 	usableGroup := map[string]string{}
 	groupRatio := map[string]float64{}
@@ -56,23 +58,126 @@ func GetPricing(c *gin.Context) {
 	}
 
 	usableGroup = service.GetUserUsableGroups(group)
-	pricing = filterPricingByUsableGroups(pricing, usableGroup)
-	// check groupRatio contains usableGroup
-	for group := range ratio_setting.GetGroupRatioCopy() {
-		if _, ok := usableGroup[group]; !ok {
-			delete(groupRatio, group)
+
+	// Filter down raw pricing to only the active Qwen model
+	var qwenPricing *model.Pricing
+	for _, item := range rawPricing {
+		nameLower := strings.ToLower(item.ModelName)
+		if strings.Contains(nameLower, "qwen2.5-7b") || strings.Contains(nameLower, "qwen") {
+			itemCopy := item
+			itemCopy.ModelName = "Qwen/Qwen2.5-7B-Instruct-AWQ"
+			itemCopy.ModelRatio = 0.0
+			itemCopy.ModelPrice = 0.0
+			itemCopy.CompletionRatio = 0.0
+			itemCopy.QuotaType = 0
+			itemCopy.VendorID = -1022
+			itemCopy.Description = "High-performance open weights instruction model (4-bit AWQ quantized). Free to use."
+			itemCopy.Tags = "Free, Chat, Featured"
+			itemCopy.EnableGroup = []string{"default", "all"}
+			itemCopy.SupportedEndpointTypes = []constant.EndpointType{constant.EndpointTypeOpenAI}
+			qwenPricing = &itemCopy
+			break
 		}
+	}
+
+	if qwenPricing == nil {
+		qwenPricing = &model.Pricing{
+			ModelName:              "Qwen/Qwen2.5-7B-Instruct-AWQ",
+			ModelRatio:             0.0,
+			ModelPrice:             0.0,
+			CompletionRatio:        0.0,
+			QuotaType:              0,
+			VendorID:               -1022,
+			Description:            "High-performance open weights instruction model (4-bit AWQ quantized). Free to use.",
+			Tags:                   "Free, Chat, Featured",
+			EnableGroup:            []string{"default", "all"},
+			SupportedEndpointTypes: []constant.EndpointType{constant.EndpointTypeOpenAI},
+		}
+	}
+
+	// Curate final pricing list: 1 active free model + under development models
+	curatedPricing := []model.Pricing{
+		*qwenPricing,
+		{
+			ModelName:              "deepseek-v3 (Under Development)",
+			VendorID:               -1005,
+			Description:            "DeepSeek-V3 671B MoE architecture - Under development, coming soon.",
+			Tags:                   "Under Development, Chat",
+			ModelRatio:             0.0,
+			ModelPrice:             0.0,
+			QuotaType:              0,
+			EnableGroup:            []string{"default", "all"},
+			SupportedEndpointTypes: []constant.EndpointType{constant.EndpointTypeOpenAI},
+		},
+		{
+			ModelName:              "gpt-4o (Under Development)",
+			VendorID:               -1012,
+			Description:            "OpenAI flagship multimodal intelligence - Under development, coming soon.",
+			Tags:                   "Under Development, Chat",
+			ModelRatio:             0.0,
+			ModelPrice:             0.0,
+			QuotaType:              0,
+			EnableGroup:            []string{"default", "all"},
+			SupportedEndpointTypes: []constant.EndpointType{constant.EndpointTypeOpenAI},
+		},
+		{
+			ModelName:              "claude-3-5-sonnet (Under Development)",
+			VendorID:               -1002,
+			Description:            "Anthropic Claude 3.5 Sonnet - Under development, coming soon.",
+			Tags:                   "Under Development, Chat",
+			ModelRatio:             0.0,
+			ModelPrice:             0.0,
+			QuotaType:              0,
+			EnableGroup:            []string{"default", "all"},
+			SupportedEndpointTypes: []constant.EndpointType{constant.EndpointTypeOpenAI},
+		},
+	}
+
+	pricing := filterPricingByUsableGroups(curatedPricing, usableGroup)
+
+	// Clean groupRatio
+	for groupKey := range ratio_setting.GetGroupRatioCopy() {
+		if _, ok := usableGroup[groupKey]; !ok {
+			delete(groupRatio, groupKey)
+		}
+	}
+
+	vendors := []model.PricingVendor{
+		{
+			ID:          -1022,
+			Name:        "Alibaba Cloud",
+			Description: "Alibaba Cloud / Qwen open models",
+			Icon:        "Qwen.Color",
+		},
+		{
+			ID:          -1005,
+			Name:        "DeepSeek",
+			Description: "DeepSeek AI models",
+			Icon:        "DeepSeek.Color",
+		},
+		{
+			ID:          -1012,
+			Name:        "OpenAI",
+			Description: "OpenAI GPT models",
+			Icon:        "OpenAI",
+		},
+		{
+			ID:          -1002,
+			Name:        "Anthropic",
+			Description: "Anthropic Claude models",
+			Icon:        "Claude.Color",
+		},
 	}
 
 	c.JSON(200, gin.H{
 		"success":            true,
 		"data":               pricing,
-		"vendors":            model.GetVendors(),
+		"vendors":            vendors,
 		"group_ratio":        groupRatio,
 		"usable_group":       usableGroup,
 		"supported_endpoint": model.GetSupportedEndpointMap(),
 		"auto_groups":        service.GetUserAutoGroup(group),
-		"pricing_version":    "a42d372ccf0b5dd13ecf71203521f9d2",
+		"pricing_version":    "daikon-api-v1",
 	})
 }
 

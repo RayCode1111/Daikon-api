@@ -210,8 +210,8 @@ var defaultModelRatio = map[string]float64{
 	"glm-4v-plus":                              0.01 * RMB,
 	"qwen-turbo":                               0.8572, // ￥0.012 / 1k tokens
 	"qwen-plus":                                10,     // ￥0.14 / 1k tokens
-	"qwen2.5-7b":                               0.5,
-	"Qwen/Qwen2.5-7B-Instruct-AWQ":             0.5,
+	"qwen2.5-7b":                               0.0,
+	"Qwen/Qwen2.5-7B-Instruct-AWQ":             0.0,
 	"text-embedding-v1":                        0.05,   // ￥0.0007 / 1k tokens
 	"SparkDesk-v1.1":                           1.2858, // ￥0.018 / 1k tokens
 	"SparkDesk-v2.1":                           1.2858, // ￥0.018 / 1k tokens
@@ -386,13 +386,13 @@ func handleThinkingBudgetModel(name, prefix, wildcard string) string {
 
 func GetModelRatio(name string) (float64, bool, string) {
 	name = FormatMatchingModelName(name)
+	mLower := strings.ToLower(name)
+	if strings.Contains(mLower, "qwen2.5-7b") || strings.Contains(mLower, "qwen/qwen2.5-7b") {
+		return 0.0, true, name
+	}
 
 	ratio, ok := modelRatioMap.Get(name)
 	if !ok {
-		mLower := strings.ToLower(name)
-		if strings.Contains(mLower, "qwen2.5-7b") || strings.Contains(mLower, "qwen/qwen2.5-7b") {
-			return 0.5, true, name
-		}
 		return 37.5, operation_setting.SelfUseModeEnabled, name
 	}
 	return ratio, true, name

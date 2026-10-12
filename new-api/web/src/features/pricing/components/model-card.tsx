@@ -106,8 +106,21 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.model, dynamicPriceOptions, currency]
   )
+  const isUnderDevelopment =
+    Boolean(props.model.tags?.includes('Under Development')) ||
+    Boolean(props.model.model_name?.includes('Under Development'))
+  const isFreeModel = props.model.model_ratio === 0 && !isUnderDevelopment
+
   let priceSummary: ReactNode
-  if (dynamicSummary) {
+  if (isUnderDevelopment) {
+    priceSummary = (
+      <div className='col-span-full flex min-w-0 items-center py-1'>
+        <span className='inline-flex items-center rounded-md bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-500 border border-amber-500/25'>
+          {t('Under Development')}
+        </span>
+      </div>
+    )
+  } else if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
       priceSummary = (
         <div className='col-span-full min-w-0'>
@@ -267,12 +280,24 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           )}
         </div>
         <div className='min-w-0 flex-1'>
-          <h3
-            className='line-clamp-2 font-mono text-[15px] leading-snug font-semibold [overflow-wrap:anywhere]'
-            title={props.model.model_name}
-          >
-            {props.model.model_name}
-          </h3>
+          <div className='flex items-center gap-1.5 flex-wrap'>
+            <h3
+              className='line-clamp-2 font-mono text-[15px] leading-snug font-semibold [overflow-wrap:anywhere]'
+              title={props.model.model_name}
+            >
+              {props.model.model_name}
+            </h3>
+            {isFreeModel && (
+              <span className='shrink-0 rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wide text-emerald-500 border border-emerald-500/30 uppercase'>
+                FREE
+              </span>
+            )}
+            {isUnderDevelopment && (
+              <span className='shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-500 border border-amber-500/30'>
+                {t('Soon')}
+              </span>
+            )}
+          </div>
           {props.model.vendor_name && (
             <p
               className='text-muted-foreground mt-1 truncate text-xs'
@@ -389,10 +414,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           <Button
             variant='ghost'
             size='sm'
-            onClick={() => props.onClick(props.model.model_name || '')}
+            disabled={isUnderDevelopment}
+            onClick={() => !isUnderDevelopment && props.onClick(props.model.model_name || '')}
           >
-            {t('Details')}
-            <ChevronRight aria-hidden className='size-3.5' />
+            {isUnderDevelopment ? t('Under Development') : t('Details')}
+            {!isUnderDevelopment && <ChevronRight aria-hidden className='size-3.5' />}
           </Button>
         </ModelPerfBadge>
       </CardFooter>

@@ -76,21 +76,3 @@ docker compose -f docker-compose.local.yml down
 
 
 
-
-
-
-
-
-
-
-
-- Remove all the trace of NewAPI, and replace by Daikon API style 
-- Remove all respone liking with chinese on this repo like this, it looks crazy.
-
-"
-Model Price Not Configured
-Request error occurred: 模型 Qwen/Qwen2.5-7B-Instruct-AWQ 的价格未配置。请前往「系统设置 → 运营设置」开启自用模式，或在「系统设置 → 分组与模型定价设置」中为该模型配置价格；Model Qwen/Qwen2.5-7B-Instruct-AWQ price not configured. Go to System Settings → Operation Settings to enable self-use mode, or configure the model price in System Settings → Group & Model Pricing. (request id: 202610110615094971208988268d9d6E2tR7m1j
-"
-
-- Disable the remain model, list it to being developed. Only support qwen2.5-7b temporally.
-

@@ -68,6 +68,7 @@ import { ApiInfoPanel } from './api-info-panel'
 import { FAQPanel } from './faq-panel'
 import { PerformanceHealthPanel } from './performance-health-panel'
 import { SummaryCards } from './summary-cards'
+import { ThirdPartyGuidePanel } from './third-party-guide-panel'
 import { UptimePanel } from './uptime-panel'
 
 const SETUP_GUIDE_VISIBILITY_STORAGE_KEY =
@@ -75,7 +76,7 @@ const SETUP_GUIDE_VISIBILITY_STORAGE_KEY =
 
 const SETUP_GUIDE_CODE_PATTERN = [
   'const request = await client.responses.create({',
-  "  model: 'gpt-4.1-mini',",
+  "  model: 'Qwen/Qwen2.5-7B-Instruct-AWQ',",
   "  input: 'Start routing traffic',",
   '})',
   '',
@@ -593,7 +594,7 @@ export function OverviewDashboard() {
 
   const requestExample = useMemo<RequestExample>(() => {
     const endpoint = normalizeEndpoint(apiInfoItems[0]?.url)
-    const model = modelsQuery.data?.[0] ?? 'gpt-4o-mini'
+    const model = modelsQuery.data?.[0] ?? 'Qwen/Qwen2.5-7B-Instruct-AWQ'
     const keyName = preferredKey?.name ?? t('No API key yet')
     const ready = Boolean(preferredKey?.id && model)
 
@@ -788,6 +789,8 @@ export function OverviewDashboard() {
           )}
 
           <SummaryCards />
+
+          <ThirdPartyGuidePanel apiKeys={apiKeysQuery.data} />
 
           {showContentPanels && (
             <CardStaggerContainer

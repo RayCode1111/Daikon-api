@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// 简化的供应商映射规则
+// Simplified vendor mapping rules
 var defaultVendorRules = map[string]string{
 	"gpt":      "OpenAI",
 	"dall-e":   "OpenAI",
@@ -16,60 +16,59 @@ var defaultVendorRules = map[string]string{
 	"gemini":   "Google",
 	"moonshot": "Moonshot",
 	"kimi":     "Moonshot",
-	"chatglm":  "智谱",
-	"glm-":     "智谱",
-	"qwen":     "阿里巴巴",
+	"chatglm":  "Zhipu",
+	"glm-":     "Zhipu",
+	"qwen":     "Alibaba Cloud",
 	"deepseek": "DeepSeek",
 	"abab":     "MiniMax",
 	"minimax":  "MiniMax",
-	"ernie":    "百度",
-	"spark":    "讯飞",
-	"hunyuan":  "腾讯",
+	"ernie":    "Baidu",
+	"spark":    "iFlytek",
+	"hunyuan":  "Tencent",
 	"command":  "Cohere",
 	"@cf/":     "Cloudflare",
 	"360":      "360",
-	"yi":       "零一万物",
+	"yi":       "01.AI",
 	"jina":     "Jina",
 	"mistral":  "Mistral",
 	"grok":     "xAI",
 	"llama":    "Meta",
-	"doubao":   "字节跳动",
-	"kling":    "快手",
-	"jimeng":   "即梦",
+	"doubao":   "ByteDance",
+	"kling":    "Kuaishou",
+	"jimeng":   "Jimeng",
 	"vidu":     "Vidu",
 }
 
-// 供应商默认图标映射
+// Vendor default icon mapping
 var defaultVendorIcons = map[string]string{
-	"OpenAI":     "OpenAI",
-	"Anthropic":  "Claude.Color",
-	"Google":     "Gemini.Color",
-	"Moonshot":   "Moonshot",
-	"智谱":         "Zhipu.Color",
-	"阿里巴巴":       "Qwen.Color",
-	"DeepSeek":   "DeepSeek.Color",
-	"MiniMax":    "Minimax.Color",
-	"百度":         "Wenxin.Color",
-	"讯飞":         "Spark.Color",
-	"腾讯":         "Hunyuan.Color",
-	"Cohere":     "Cohere.Color",
-	"Cloudflare": "Cloudflare.Color",
-	"360":        "Ai360.Color",
-	"零一万物":       "Yi.Color",
-	"Jina":       "Jina",
-	"Mistral":    "Mistral.Color",
-	"xAI":        "XAI",
-	"Meta":       "Ollama",
-	"字节跳动":       "Doubao.Color",
-	"快手":         "Kling.Color",
-	"即梦":         "Jimeng.Color",
-	"Vidu":       "Vidu",
-	"微软":         "AzureAI",
-	"Microsoft":  "AzureAI",
-	"Azure":      "AzureAI",
+	"OpenAI":        "OpenAI",
+	"Anthropic":     "Claude.Color",
+	"Google":        "Gemini.Color",
+	"Moonshot":      "Moonshot",
+	"Zhipu":         "Zhipu.Color",
+	"Alibaba Cloud": "Qwen.Color",
+	"DeepSeek":      "DeepSeek.Color",
+	"MiniMax":       "Minimax.Color",
+	"Baidu":         "Wenxin.Color",
+	"iFlytek":       "Spark.Color",
+	"Tencent":       "Hunyuan.Color",
+	"Cohere":        "Cohere.Color",
+	"Cloudflare":    "Cloudflare.Color",
+	"360":           "Ai360.Color",
+	"01.AI":         "Yi.Color",
+	"Jina":          "Jina",
+	"Mistral":       "Mistral.Color",
+	"xAI":           "XAI",
+	"Meta":          "Ollama",
+	"ByteDance":     "Doubao.Color",
+	"Kuaishou":      "Kling.Color",
+	"Jimeng":        "Jimeng.Color",
+	"Vidu":          "Vidu",
+	"Microsoft":     "AzureAI",
+	"Azure":         "AzureAI",
 }
 
-// initDefaultVendorMapping 简化的默认供应商映射
+// initDefaultVendorMapping sets up default vendor mapping
 func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vendor, enableAbilities []AbilityWithChannel) {
 	patterns := make([]string, 0, len(defaultVendorRules))
 	for pattern := range defaultVendorRules {
@@ -87,7 +86,7 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 			continue
 		}
 
-		// 匹配供应商
+		// Match vendor
 		vendorID := 0
 		modelLower := strings.ToLower(modelName)
 		for _, pattern := range patterns {
@@ -98,7 +97,7 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 			}
 		}
 
-		// 创建模型元数据
+		// Create model metadata
 		metaMap[modelName] = &Model{
 			ModelName: modelName,
 			VendorID:  vendorID,
@@ -111,29 +110,29 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 // Default vendor entries are presentation data. Reading pricing must never
 // recreate a deleted/merged database record.
 var defaultVendorDisplayIDs = map[string]int{
-	"360":        -1001,
-	"Anthropic":  -1002,
-	"Cloudflare": -1003,
-	"Cohere":     -1004,
-	"DeepSeek":   -1005,
-	"Google":     -1006,
-	"Jina":       -1007,
-	"Meta":       -1008,
-	"MiniMax":    -1009,
-	"Mistral":    -1010,
-	"Moonshot":   -1011,
-	"OpenAI":     -1012,
-	"Vidu":       -1013,
-	"xAI":        -1014,
-	"即梦":         -1015,
-	"字节跳动":       -1016,
-	"快手":         -1017,
-	"智谱":         -1018,
-	"百度":         -1019,
-	"腾讯":         -1020,
-	"讯飞":         -1021,
-	"阿里巴巴":       -1022,
-	"零一万物":       -1023,
+	"360":           -1001,
+	"Anthropic":     -1002,
+	"Cloudflare":    -1003,
+	"Cohere":        -1004,
+	"DeepSeek":      -1005,
+	"Google":        -1006,
+	"Jina":          -1007,
+	"Meta":          -1008,
+	"MiniMax":       -1009,
+	"Mistral":       -1010,
+	"Moonshot":      -1011,
+	"OpenAI":        -1012,
+	"Vidu":          -1013,
+	"xAI":           -1014,
+	"Jimeng":        -1015,
+	"ByteDance":     -1016,
+	"Kuaishou":      -1017,
+	"Zhipu":         -1018,
+	"Baidu":         -1019,
+	"Tencent":       -1020,
+	"iFlytek":       -1021,
+	"Alibaba Cloud": -1022,
+	"01.AI":         -1023,
 }
 
 func getDisplayVendor(vendorName string, vendorMap map[int]*Vendor) int {

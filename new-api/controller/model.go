@@ -223,18 +223,8 @@ func ListModels(c *gin.Context, modelType int) {
 		return
 	}
 	ownerGroups := groups.ownerGroups
-	models := service.GetGroupsEnabledModels(ownerGroups)
-	hasQwen := false
-	for _, modelName := range models {
-		mLower := strings.ToLower(modelName)
-		if mLower == "qwen2.5-7b" || mLower == "qwen/qwen2.5-7b-instruct-awq" || strings.Contains(mLower, "qwen2.5-7b") {
-			userModelNames = append(userModelNames, modelName)
-			hasQwen = true
-		}
-	}
-	if !hasQwen {
-		userModelNames = append([]string{"qwen2.5-7b"}, userModelNames...)
-	}
+	_ = service.GetGroupsEnabledModels(ownerGroups)
+	userModelNames = []string{"Qwen/Qwen2.5-7B-Instruct-AWQ"}
 
 	ownerByModel := map[string]string{}
 	if len(ownerGroups) > 0 {
