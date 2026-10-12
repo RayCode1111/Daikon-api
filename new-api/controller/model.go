@@ -235,13 +235,6 @@ func ListModels(c *gin.Context, modelType int) {
 	if !hasQwen {
 		userModelNames = append([]string{"qwen2.5-7b"}, userModelNames...)
 	}
-	underDev := []string{
-		"gpt-4o (under-development)",
-		"claude-3-5-sonnet (under-development)",
-		"gemini-1.5-pro (under-development)",
-		"deepseek-v3 (under-development)",
-	}
-	userModelNames = append(userModelNames, underDev...)
 
 	ownerByModel := map[string]string{}
 	if len(ownerGroups) > 0 {

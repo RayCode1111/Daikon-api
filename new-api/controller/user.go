@@ -653,15 +653,6 @@ func GetUserModels(c *gin.Context) {
 		activeModels = append([]string{"qwen2.5-7b"}, activeModels...)
 	}
 
-	// Under-development models to inform users
-	underDev := []string{
-		"gpt-4o (Under Development)",
-		"claude-3-5-sonnet (Under Development)",
-		"gemini-1.5-pro (Under Development)",
-		"deepseek-v3 (Under Development)",
-	}
-	activeModels = append(activeModels, underDev...)
-
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
